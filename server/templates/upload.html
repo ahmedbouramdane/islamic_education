@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI",Tahoma,sans-serif;background:#f0ede4;color:#333}
+header{background:linear-gradient(135deg,#1a6b3c,#0d4a26);color:#fff;text-align:center;padding:24px 20px}
+header h1{font-size:1.4rem}
+header p{font-size:.82rem;opacity:.8;margin-top:4px}
+.panel{max-width:740px;margin:18px auto;background:#fff;border-radius:10px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.row{margin-bottom:14px}
+.row:last-child{margin-bottom:0}
+.row label{display:block;font-weight:600;font-size:.82rem;color:#555;margin-bottom:4px}
+.row select,.row input[type=file]{width:100%;padding:9px 12px;border:2px solid #e0dccf;border-radius:7px;font-size:.9rem;background:#fff;font-family:inherit}
+.row select:focus{border-color:#1a6b3c;outline:none}
+.drop{border:2px dashed #c9a84c;border-radius:9px;padding:24px;text-align:center;cursor:pointer;background:#fdfcf8;transition:all .2s}
+.drop:hover,.drop.drag{border-color:#1a6b3c;background:#f0faf3}
+.drop .icon{font-size:2rem;display:block;margin-bottom:4px}
+.drop .txt{color:#666;font-size:.85rem}
+.drop .sub{color:#aaa;font-size:.72rem;margin-top:3px}
+.btn{padding:10px 24px;border:none;border-radius:7px;font-size:.92rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-primary{background:#1a6b3c;color:#fff}
+.btn-primary:hover{background:#0d4a26}
+.btn-sm{background:#c62828;color:#fff;padding:3px 8px;font-size:.7rem;border-radius:3px;border:none;cursor:pointer}
+.btn-sm:hover{background:#871818}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:10px}
+.card{background:#f9f8f3;border-radius:7px;padding:6px;text-align:center;border:1px solid #e0dccf;position:relative}
+.card img,.card video{width:100%;height:80px;object-fit:cover;border-radius:5px}
+.card video{background:#000}
+.card .nm{font-size:.65rem;color:#555;margin-top:3px;word-break:break-all;line-height:1.2}
+.card .del{position:absolute;top:3px;left:3px}
+.empty{text-align:center;padding:24px;color:#aaa}
+.empty span{font-size:2rem;display:block;margin-bottom:4px}
+.msg{max-width:740px;margin:10px auto 0;padding:8px 14px;border-radius:7px;font-size:.85rem;display:none}
+.msg.ok{display:block;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
+.msg.err{display:block;background:#fbe9e7;color:#c62828;border:1px solid #ef9a9a}
+.loading{display:none;text-align:center;padding:10px;color:#1a6b3c;font-size:.85rem}
+.loading .spin{display:inline-block;width:18px;height:18px;border:3px solid #e0dccf;border-top-color:#1a6b3c;border-radius:50%;animation:s .6s linear infinite;vertical-align:middle;margin-left:6px}
+@keyframes s{to{transform:rotate(360deg)}}
+.section-title{font-size:.9rem;color:#1a6b3c;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+footer{text-align:center;padding:16px;color:#999;font-size:.75rem}
+.paste-hint {color:#888; font-size:.72rem; margin-top:4px;}
+@media(max-width:600px){
+  .panel{padding:14px;margin:10px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr))}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>📤 رفع محتوى الدروس</h1>
+  <p>إدارة صور وفيديوهات التربية الإسلامية</p>
+</header>
+<div id="msg" class="msg"></div>
+
+<div class="panel">
+  <div class="row">
+    <label>👤 المستوى</label>
+    <select id="level">
+      {% for k,v in levels.items() %}
+      <option value="{{k}}" {{'selected' if k=='رياض2'}}>{{v}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="row">
+    <label>📂 القسم</label>
+    <select id="cat"></select>
+  </div>
+  <div class="row">
+    <label>📖 الدرس</label>
+    <select id="les"></select>
+  </div>
+  <div class="row">
+    <label>🖼️ الملفات</label>
+    <div class="drop" id="drop">
+      <span class="icon">📎</span>
+      <div class="txt">اسحب وأفلت الملفات أو انقر للاختيار</div>
+      <div class="sub" id="allowedExts">{{ allowed }}</div>
+      <div class="paste-hint">أو الصق صورة منسوخة (Ctrl+V)</div>
+    </div>
+    <input type="file" id="fileInput" multiple hidden accept="{{ accept }}">
+    <div class="loading" id="loading"><span class="spin"></span> جاري الرفع...</div>
+  </div>
+  <div style="text-align:center">
+    <button class="btn btn-primary" id="uploadBtn">📤 رفع</button>
+  </div>
+  <div style="margin-top:10px;padding:8px 12px;background:#f5f5f5;border-radius:6px;font-size:.75rem;color:#888;text-align:center">
+    💡 الملفات تُعاد تسميتها تلقائياً: lesson1.ext, lesson2.ext ...
+  </div>
+</div>
+
+<div class="panel">
+  <div class="section-title">
+    <span>👥 أسماء الطلاب</span>
+    <span id="studentCount" style="font-size:.75rem;color:#888"></span>
+  </div>
+  <div class="row">
+    <label>أسماء الطلاب الذين أنجزوا الدرس</label>
+    <textarea id="studentsInput" style="width:100%;padding:9px 12px;border:2px solid #e0dccf;border-radius:7px;font-size:.85rem;font-family:inherit;min-height:80px"></textarea>
+  </div>
+  <div style="text-align:center">
+    <button class="btn btn-primary" id="saveStudentsBtn">💾 حفظ أسماء الطلاب</button>
+    <div id="studentsMsg" class="msg" style="margin-top:8px"></div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="section-title">
+    <span id="folderTitle">📂 الملفات</span>
+    <span id="fileCount" style="font-size:.75rem;color:#888"></span>
+  </div>
+  <div id="filesContainer"><div class="empty"><span>📭</span>اختر درساً</div></div>
+</div>
+
+<footer>دروس التربية الإسلامية</footer>
+
+<script>
+const CATS = {{ cats|tojson }};
+const CLAB = {{ clab|tojson }};
+const LLAB = {{ llab|tojson }};
+const lv = document.getElementById('level');
+const ce = document.getElementById('cat');
+const le = document.getElementById('les');
+const drop = document.getElementById('drop');
+const fi = document.getElementById('fileInput');
+const ub = document.getElementById('uploadBtn');
+const ld = document.getElementById('loading');
+const msg = document.getElementById('msg');
+const fc = document.getElementById('filesContainer');
+const ft = document.getElementById('folderTitle');
+const fcnt = document.getElementById('fileCount');
+const si = document.getElementById('studentsInput');
+const sc = document.getElementById('studentCount');
+const sb = document.getElementById('saveStudentsBtn');
+const sm = document.getElementById('studentsMsg');
+let picked = [];
+
+function showStudentMsg(t, type) { sm.textContent = t; sm.className = 'msg '+type; sm.style.display='block'; setTimeout(()=>sm.style.display='none',3000); }
+
+async function loadStudents() {
+  const p = path();
+  try {
+    const r = await fetch('/api/students/' + p);
+    const d = await r.json();
+    si.value = d.text;
+  } catch { si.value = ''; }
+}
+
+sb.addEventListener('click', async () => {
+  const text = si.value;
+  const p = path();
+  try {
+    const r = await fetch('/api/students/' + p, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text: text})
+    });
+    const d = await r.json();
+    if (d.ok) showStudentMsg('تم الحفظ', 'ok');
+    else showStudentMsg('خطأ: ' + d.error, 'err');
+  } catch(e) { showStudentMsg('خطأ: '+e.message, 'err'); }
+});
+
+function fillCats() {
+  ce.innerHTML = Object.keys(CATS).map(k => `<option value="${k}">${CLAB[k]||k}</option>`).join('');
+  fillLes();
+}
+function fillLes() {
+  const c = ce.value;
+  const ls = CATS[c]||[];
+  le.innerHTML = ls.map(k => `<option value="${k}">${LLAB[k]||k}</option>`).join('');
+  loadFiles();
+}
+ce.addEventListener('change', fillLes);
+lv.addEventListener('change', ()=>{ loadFiles(); loadStudents(); });
+le.addEventListener('change', ()=>{ loadFiles(); loadStudents(); });
+
+function path() { return `${lv.value}/${ce.value}/${le.value}`; }
+
+async function loadFiles() {
+  const p = path();
+  ft.textContent = '📂 ' + p;
+  try {
+    const r = await fetch('/api/files/' + p);
+    const d = await r.json();
+    fcnt.textContent = d.files.length + ' ملف';
+    if (!d.files.length) {
+      fc.innerHTML = '<div class="empty"><span>📭</span>لا يوجد محتوى</div>';
+      return;
+    }
+    const img = f => !!f.match(/[.](jpg|jpeg|png|gif|webp)$/i);
+    const vid = f => !!f.match(/[.](mp4|webm|mov|avi)$/i);
+    fc.innerHTML = '<div class="grid">' + d.files.map(f => {
+      const src = '/content/' + p + '/' + f;
+      let prv = '';
+      if (img(f)) prv = `<img src="${src}" alt="${f}" loading="lazy">`;
+      else if (vid(f)) prv = `<video src="${src}#t=0.1" preload="metadata"></video>`;
+      else prv = '<div style="height:80px;display:flex;align-items:center;justify-content:center;background:#efebe9;border-radius:5px;font-size:1.5rem">📄</div>';
+      return `<div class="card">${prv}<div class="nm">${f}</div><div class="del"><button class="btn-sm" onclick="delFile('${p}','${f}')">×</button></div></div>`;
+    }).join('') + '</div>';
+  } catch { fc.innerHTML = '<div class="empty"><span>⚠️</span>خطأ</div>'; }
+}
+
+async function delFile(p, f) {
+  if (!confirm('حذف ' + f + '?')) return;
+  const r = await fetch('/api/delete/' + p + '/' + f, {method:'DELETE'});
+  const d = await r.json();
+  if (d.ok) { show('✅ تم الحذف', 'ok'); loadFiles(); }
+  else show('❌ ' + d.error, 'err');
+}
+
+drop.addEventListener('click', () => fi.click());
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
+drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('drag'); got(e.dataTransfer.files); });
+fi.addEventListener('change', () => { got(fi.files); fi.value=''; });
+
+// Paste handler improved to support image blobs from clipboard (e.g., screenshots)
+document.addEventListener('paste', e => {
+  const files = e.clipboardData.files;
+  if (files.length) {
+    e.preventDefault();
+    got(files);
+  } else {
+    // No file objects, check for image items
+    const items = e.clipboardData.items;
+    const blobs = [];
+    for (let item of items) {
+      if (item.kind === 'file' && item.type.match(/^image\//)) {
+        const blob = item.getAsFile();
+        if (blob) {
+          const ext = blob.type.split('/')[1] || 'png';
+          const name = 'clipboard_' + Date.now() + '.' + ext;
+          blobs.push(new File([blob], name, { type: blob.type }));
+        }
+      }
+    }
+    if (blobs.length) {
+      e.preventDefault();
+      got(blobs);
+    }
+  }
+});
+
+function got(files) {
+  picked = Array.from(files).filter(f => {
+    const e = '.' + f.name.split('.').pop().toLowerCase();
+    return {{ exts|tojson }}.includes(e);
+  });
+  drop.querySelector('.txt').textContent = picked.length ? picked.length + ' ملف(ات)' : 'اسحب وأفلت الملفات أو انقر للاختيار';
+  const allowedEl = document.getElementById('allowedExts');
+  if (allowedEl) {
+    allowedEl.textContent = picked.length ? picked.map(f=>f.name).join('، ') : '{{ allowed }}';
+  }
+}
+
+ub.addEventListener('click', async () => {
+  if (!picked.length) { show('⚠️ اختر ملفات أولاً', 'err'); return; }
+  const fd = new FormData();
+  fd.append('level', lv.value);
+  fd.append('cat', ce.value);
+  fd.append('les', le.value);
+  picked.forEach(f => fd.append('files', f));
+  ld.style.display = 'block';
+  ub.disabled = true;
+  try {
+    const r = await fetch('/api/upload', {method:'POST', body:fd});
+    const d = await r.json();
+    ld.style.display = 'none';
+    ub.disabled = false;
+    if (d.ok) { show('✅ رفع ' + d.count + ' ملف', 'ok'); picked=[]; drop.querySelector('.txt').textContent='اسحب وأفلت الملفات أو انقر للاختيار'; document.getElementById('allowedExts').textContent='{{ allowed }}'; loadFiles(); }
+    else show('❌ ' + d.error, 'err');
+  } catch(e) { ld.style.display='none'; ub.disabled=false; show('❌ '+e.message,'err'); }
+});
+
+function show(t, type) { msg.textContent = t; msg.className = 'msg '+type; msg.style.display='block'; setTimeout(()=>msg.style.display='none',4000); }
+fillCats();
+loadFiles();
+loadStudents();
+</script>
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دروس التربية الإسلامية</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f4f1e8;color:#2d2d2d;line-height:1.8}
+.container{max-width:1100px;margin:auto;padding:0 20px}
+
+/* Header */
+header{background:linear-gradient(160deg,#1a6b3c,#0d4a26);color:#fff;text-align:center;padding:32px 20px 20px}
+header h1{font-size:1.6rem;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,.15)}
+header p{font-size:.85rem;opacity:.75;letter-spacing:.3px}
+
+/* Level bar */
+.level-bar{background:#0d4a26;padding:10px 20px;display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.06)}
+.level-bar label{color:#c9a84c;font-weight:600;font-size:.82rem;letter-spacing:.5px}
+.level-bar select{padding:6px 14px;font-size:.88rem;border-radius:8px;border:2px solid transparent;background:#fff;color:#333;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s}
+.level-bar select:focus{outline:none;border-color:#c9a84c;box-shadow:0 0 0 3px rgba(201,168,76,.2)}
+
+/* Tabs */
+.tabs-wrap{background:#fff;border-bottom:2px solid #e0dccf;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.tabs{display:flex;list-style:none;justify-content:center;flex-wrap:wrap;gap:2px;padding:10px 16px 0}
+.tabs li button{background:transparent;border:none;padding:10px 16px;font-size:.82rem;font-weight:600;color:#666;cursor:pointer;border-radius:8px 8px 0 0;transition:all .25s;font-family:inherit;position:relative;white-space:nowrap}
+.tabs li button:hover{background:#f0efe8;color:#1a6b3c}
+.tabs li button.active{background:linear-gradient(180deg,#1a6b3c,#156e3f);color:#fff;box-shadow:0 -2px 10px rgba(26,107,60,.15)}
+.tabs li button .count{display:inline-block;background:rgba(0,0,0,.07);border-radius:10px;padding:0 7px;font-size:.65rem;margin-right:5px}
+.tabs li button.active .count{background:rgba(255,255,255,.15)}
+
+/* Content */
+.content-wrap{background:#fff;min-height:400px;padding:25px 20px 40px;margin:0 auto;max-width:1100px;border-radius:0 0 14px 14px;box-shadow:0 4px 20px rgba(0,0,0,.04)}
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fadeUp .35s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.tab-title{font-size:1.15rem;color:#1a6b3c;margin-bottom:16px;padding-bottom:10px;border-bottom:3px solid #c9a84c;display:flex;align-items:center;gap:8px}
+.tab-title .tab-badge{background:#1a6b3c;color:#fff;font-size:.65rem;padding:2px 10px;border-radius:12px;font-weight:500}
+
+/* Lesson Cards */
+.lesson-card{background:#faf9f5;border-right:4px solid #d4c9a0;padding:14px 18px;margin-bottom:10px;border-radius:8px;transition:all .25s;cursor:pointer;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.03)}
+.lesson-card:hover{background:#f3f0e6;border-right-color:#1a6b3c;transform:translateX(-4px);box-shadow:0 3px 12px rgba(0,0,0,.06)}
+.lesson-card .info{flex:1}
+.lesson-card .lesson-title{font-size:1rem;font-weight:600;color:#333}
+.lesson-card .lesson-desc{font-size:.78rem;color:#999;margin-top:2px}
+.lesson-card .badge{font-size:.68rem;padding:4px 12px;border-radius:20px;white-space:nowrap;font-weight:500;transition:all .3s}
+.lesson-card .badge.loaded{background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9}
+.lesson-card .badge.empty{background:#f5f5f5;color:#bbb;border:1px solid #eee}
+.lesson-card .badge.checking{background:#fff8e1;color:#f57f17;border:1px solid #ffe082}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.75);z-index:1000;justify-content:center;align-items:center;padding:16px;direction:ltr;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;max-width:960px;width:100%;max-height:94vh;overflow:hidden;padding:0;direction:rtl;box-shadow:0 25px 80px rgba(0,0,0,.35);animation:modalPop .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes modalPop{from{transform:scale(.92)translateY(20px);opacity:0}to{transform:scale(1)translateY(0);opacity:1}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;border-bottom:1px solid #e8e4d8;flex-shrink:0}
+.modal-header h3{font-size:1rem;color:#1a6b3c;font-weight:600;display:flex;align-items:center;gap:8px}
+.modal-header .back-btn{background:none;border:none;font-size:1.2rem;cursor:pointer;color:#888;padding:2px 6px;border-radius:6px;transition:all .2s;line-height:1;display:none}
+.modal-header .back-btn:hover{background:#f0efe8;color:#333}
+.modal-header .back-btn.show{display:inline-block}
+.modal-header .meta{font-size:.75rem;color:#aaa;margin-right:8px}
+.modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:#bbb;padding:4px 10px;border-radius:8px;transition:all .2s;line-height:1}
+.modal-close:hover{background:#f5f5f5;color:#555}
+
+/* Modal Body - File List */
+.modal-body{overflow-y:auto;max-height:calc(94vh - 56px);padding:0}
+.modal-body::-webkit-scrollbar{width:6px}
+.modal-body::-webkit-scrollbar-track{background:transparent}
+.modal-body::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px}
+
+.modal-empty{text-align:center;padding:60px 20px;color:#999}
+.modal-empty .empty-icon{font-size:3rem;display:block;margin-bottom:12px;opacity:.4}
+
+/* Summary Bar */
+.file-summary{display:flex;gap:6px;padding:12px 22px;background:#f9f8f4;border-bottom:1px solid #eee;font-size:.78rem;color:#666;flex-wrap:wrap}
+.file-summary .sum-item{display:flex;align-items:center;gap:5px;padding:3px 10px;background:#fff;border-radius:20px;border:1px solid #e8e4d8}
+.file-summary .sum-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.file-summary .sum-dot.img{background:#4caf50}
+.file-summary .sum-dot.vid{background:#2196f3}
+.file-summary .sum-dot.pdf{background:#f44336}
+
+/* Students Section */
+.students-section{border-top:2px solid #e8e4d8;padding:16px 22px;background:#faf9f5}
+.students-section .students-title{font-size:.82rem;font-weight:600;color:#1a6b3c;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.students-section .students-title .count-badge{background:#1a6b3c;color:#fff;font-size:.6rem;padding:1px 8px;border-radius:10px}
+.students-tags{display:flex;flex-wrap:wrap;gap:6px}
+.students-tags .stag{background:#fff;border:1px solid #d4c9a0;border-radius:20px;padding:4px 14px;font-size:.78rem;color:#555;transition:all .15s}
+.students-tags .stag:hover{background:#1a6b3c;color:#fff;border-color:#1a6b3c}
+.students-empty{font-size:.78rem;color:#bbb;padding:4px 0}
+
+/* File Item */
+.file-item{display:flex;align-items:center;gap:14px;padding:14px 22px;border-bottom:1px solid #f0eee8;transition:background .15s}
+.file-item:last-child{border-bottom:none}
+.file-item:hover{background:#faf9f5}
+
+.file-preview{width:100px;height:68px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#f0eee8;position:relative;border:1px solid #e8e4d8}
+.file-preview img{width:100%;height:100%;object-fit:cover;cursor:pointer}
+.file-preview .vid-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)}
+.file-preview .vid-overlay .play-tri{width:0;height:0;border-top:11px solid transparent;border-bottom:11px solid transparent;border-right:18px solid #fff;margin-right:4px;opacity:.9}
+.file-preview .file-icon{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f8f6f0,#eeebe2)}
+.file-preview .file-icon svg{width:28px;height:28px;opacity:.45}
+
+.file-info{flex:1;min-width:0}
+.file-name{font-size:.88rem;font-weight:500;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-meta{font-size:.72rem;color:#aaa;margin-top:2px;display:flex;gap:8px;align-items:center}
+.file-type-badge{font-size:.62rem;padding:1px 9px;border-radius:10px;font-weight:500}
+.file-type-badge.img{background:#e8f5e9;color:#2e7d32}
+.file-type-badge.vid{background:#e3f0fd;color:#1565c0}
+.file-type-badge.pdf{background:#fce4ec;color:#c62828}
+
+.file-actions{display:flex;gap:6px;flex-shrink:0}
+.file-actions a,.file-actions button{text-decoration:none;font-size:.75rem;padding:6px 14px;border-radius:8px;font-weight:500;transition:all .2s;cursor:pointer;border:none;font-family:inherit;white-space:nowrap}
+.file-actions .view-btn{background:#1a6b3c;color:#fff}
+.file-actions .view-btn:hover{background:#0d4a26}
+.file-actions .view-btn.vid{background:#1565c0}
+.file-actions .view-btn.vid:hover{background:#0d47a1}
+.file-actions .view-btn.pdf-v{background:#6a1b9a}
+.file-actions .view-btn.pdf-v:hover{background:#4a148c}
+.file-actions .dl-btn{background:transparent;color:#666;border:1px solid #ddd}
+.file-actions .dl-btn:hover{background:#f5f5f5;border-color:#bbb;color:#333}
+
+/* Inline Preview (inside modal) */
+.preview-container{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;min-height:300px;background:#faf9f5}
+.preview-container img{max-width:100%;max-height:70vh;object-fit:contain;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.preview-container video{width:100%;max-height:70vh;border-radius:8px;background:#000;box-shadow:0 4px 20px rgba(0,0,0,.12)}
+.preview-container .pdf-embed{width:100%;height:70vh;border:none;border-radius:8px;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.preview-container .preview-name{font-size:.82rem;color:#888;margin-bottom:12px}
+.preview-container .preview-actions{display:flex;gap:10px;margin-top:14px}
+.preview-container .preview-actions a,.preview-container .preview-actions button{text-decoration:none;font-size:.78rem;padding:8px 20px;border-radius:8px;font-weight:500;transition:all .2s;cursor:pointer;border:none;font-family:inherit}
+.preview-container .preview-actions .dl-btn{background:transparent;color:#666;border:1px solid #ddd}
+.preview-container .preview-actions .dl-btn:hover{background:#f0efe8;border-color:#bbb}
+
+/* Lightbox */
+.lightbox-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.94);z-index:3000;justify-content:center;align-items:center;padding:20px;cursor:zoom-out}
+.lightbox-overlay.open{display:flex}
+.lightbox-overlay img{max-width:94%;max-height:92vh;object-fit:contain;border-radius:4px;animation:lbIn .25s ease}
+@keyframes lbIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+.lightbox-close{position:fixed;top:18px;left:18px;background:rgba(0,0,0,.5);color:#fff;border:none;font-size:1.6rem;cursor:pointer;border-radius:50%;width:42px;height:42px;display:flex;align-items:center;justify-content:center;transition:all .2s;z-index:3001;line-height:1}
+.lightbox-close:hover{background:rgba(0,0,0,.8)}
+.lightbox-nav{position:fixed;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.4);color:#fff;border:none;font-size:1.3rem;cursor:pointer;padding:14px 10px;border-radius:8px;transition:all .2s;z-index:3001}
+.lightbox-nav:hover{background:rgba(0,0,0,.7)}
+.lightbox-nav.prev{left:14px}
+.lightbox-nav.next{right:14px}
+.lightbox-counter{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.4);font-size:.78rem;z-index:3001;letter-spacing:.5px}
+
+footer{text-align:center;padding:20px;color:#999;font-size:.78rem;border-top:1px solid #e0dccf;margin-top:30px}
+
+@media(max-width:768px){
+  header h1{font-size:1.15rem}
+  .tabs li button{padding:7px 10px;font-size:.73rem}
+  .tab-title{font-size:1rem}
+  .lesson-card{padding:12px 14px}
+  .lesson-card .badge{font-size:.6rem;padding:3px 8px}
+  .level-bar select{font-size:.8rem;padding:5px 10px}
+  .file-item{flex-wrap:wrap;gap:10px;padding:12px 16px}
+  .file-preview{width:80px;height:56px}
+  .file-actions{width:100%;justify-content:flex-start;padding-right:94px}
+  .modal{padding:0;border-radius:0;max-height:100vh}
+  .modal-header{padding:12px 16px}
+  .file-summary{padding:10px 16px}
+  .file-item{padding:12px 16px}
+  .lightbox-nav{padding:10px 6px;font-size:1rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>دروس التربية الإسلامية</h1>
+    <p>الثانوي التأهيلي - جميع الشعب</p>
+  </div>
+  <div class="level-bar">
+    <label>المستوى الدراسي:</label>
+    <select id="levelSelect">
+      <option value="رياض1">علوم رياضية (1)</option>
+      <option value="رياض2" selected>علوم رياضية (2)</option>
+      <option value="رياض3">علوم رياضية (3)</option>
+      <option value="رياض4">علوم رياضية (4)</option>
+      <option value="رياض5">علوم رياضية (5)</option>
+      <option value="تج1">علوم تجريبية (1)</option>
+      <option value="تج2">علوم تجريبية (2)</option>
+      <option value="تج3">علوم تجريبية (3)</option>
+    </select>
+  </div>
+</header>
+
+<div class="tabs-wrap">
+  <ul class="tabs" id="tabs"></ul>
+</div>
+
+<div class="content-wrap" id="content"></div>
+<style>
+  .fs-18 {font-size: 18px;}
+</style>
+<footer>
+  <div class="container fs-18">دروس التربية الإسلامية &copy; 2026 | تطوير: Ahmed BOURAMDANE</div>
+</footer>
+
+<!-- Lesson Modal -->
+<div class="modal-overlay" id="lessonModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div><h3><button class="back-btn" id="modalBack">&#8250;</button><span id="modalTitle"></span></h3><span class="meta" id="modalMeta"></span></div>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox-overlay" id="lightbox">
+  <button class="lightbox-close" id="lbClose">&times;</button>
+  <button class="lightbox-nav prev" id="lbPrev">&#8249;</button>
+  <button class="lightbox-nav next" id="lbNext">&#8250;</button>
+  <img id="lbImg" src="" alt="">
+  <div class="lightbox-counter" id="lbCounter"></div>
+</div>
+
+<script src="content-index.js"></script>
+<script>
+const DATA = [
+  {id:'قران',  abbr:'القرآن', title:'التزكية - القرآن',
+   lessons:[
+     {id:'شطر1', title:'الشطر الأول: سورة يوسف', desc:'1-20'},
+     {id:'شطر2', title:'الشطر الثاني: سورة يوسف', desc:'21-42'},
+     {id:'شطر3', title:'الشطر الثالث: سورة يوسف', desc:'43-52'},
+     {id:'شطر4', title:'الشطر الرابع: سورة يوسف', desc:'53-68'},
+     {id:'شطر5', title:'الشطر الخامس: سورة يوسف', desc:'69-93'},
+     {id:'شطر6', title:'الشطر السادس: سورة يوسف', desc:'94-111'},
+   ]},
+  {id:'عقيدة', abbr:'العقيدة', title:'التزكية - العقيدة',
+   lessons:[
+     {id:'ايمان_غيب',    title:'الإيمان والغيب'},
+     {id:'ايمان_علم',    title:'الإيمان والعلم'},
+     {id:'ايمان_فلسفة', title:'الإيمان والفلسفة'},
+     {id:'ايمان_عمارة', title:'الإيمان وعمارة الأرض'},
+   ]},
+  {id:'اقتداء', abbr:'الاقتداء', title:'مدخل الاقتداء',
+   lessons:[
+     {id:'صلح_حديبية', title:'صلح الحديبية وفتح مكة', desc:'دروس وعبر'},
+     {id:'رسول_مفاوض', title:'الرسول مفاوضاً ومستشيراً'},
+     {id:'عثمان_بذل',   title:'عثمان بن عفان: البذل والحياء', desc:'نماذج للتأسي'},
+     {id:'رسول_بيت',    title:'الرسول في بيته'},
+   ]},
+  {id:'استجابة', abbr:'الاستجابة', title:'مدخل الاستجابة',
+   lessons:[
+     {id:'زواج',  title:'فقه الأسرة: الزواج', desc:'الأحكام والمقاصد'},
+     {id:'طلاق',  title:'فقه الأسرة: الطلاق', desc:'الأحكام والمقاصد'},
+     {id:'اطفال', title:'فقه الأسرة: رعاية الأطفال وحقوقهم'},
+     {id:'اسرة',  title:'فقه الأسرة: الأسرة نواة المجتمع'},
+   ]},
+  {id:'قسط', abbr:'القسط', title:'مدخل القسط',
+   lessons:[
+     {id:'امانة',     title:'حق الله تعالى: الوفاء بالأمانة والمسؤولية'},
+     {id:'صبر_يقين',   title:'حق النفس: الصبر واليقين'},
+     {id:'عفة_حياء',   title:'حق الغير: العفة والحياء'},
+     {id:'توسط_بيئة',  title:'التوسط والاعتدال في استغلال البيئة'},
+   ]},
+  {id:'حكمة', abbr:'الحكمة', title:'مدخل الحكمة',
+   lessons:[
+     {id:'كفاءة', title:'الكفاءة والاستحقاق أساس التكليف'},
+     {id:'عفو',   title:'العفو والتسامح'},
+     {id:'وقاية', title:'وقاية المجتمع من تفشي الفواحش'},
+     {id:'سبعة',  title:'السبعة الذين يظلهم الله في ظله', desc:'يوم لا ظل إلا ظله'},
+   ]},
+];
+
+const IMG_EXTS = ['jpg','jpeg','png','gif','webp'];
+const VID_EXTS = ['mp4','webm','mov','avi'];
+const ALL_EXTS = [...IMG_EXTS, ...VID_EXTS, 'pdf'];
+
+let contentIndex = (typeof __CONTENT_INDEX__ !== 'undefined') ? __CONTENT_INDEX__ : null;
+async function loadIndexFallback() {
+  if (contentIndex) return;
+  try { const r = await fetch('content-index.json?'+Date.now()); if (r.ok) contentIndex = await r.json(); } catch {}
+}
+
+let currentLevel = 'رياض2';
+let activeTab = DATA[0].id;
+let lbItems = [], lbCurrent = 0;
+
+const $ = id => document.getElementById(id);
+const tabsEl = $('tabs'), contentEl = $('content'), levelSelect = $('levelSelect');
+const modal = $('lessonModal'), modalTitle = $('modalTitle'), modalMeta = $('modalMeta');
+const modalBody = $('modalBody'), modalClose = $('modalClose'), modalBack = $('modalBack');
+
+let listState = null;
+
+function lessonPath(lv,cat,les){return 'content/'+lv+'/'+cat+'/'+les}
+function getIndexFiles(lv,cat,les){return contentIndex?.levels?.[lv]?.[cat]?.[les]||null}
+function imgExists(url){return new Promise(r=>{const i=new Image();i.onload=()=>r(true);i.onerror=()=>r(false);i.src=url+'?'+Date.now()})}
+function fileExists(url){return new Promise(r=>{const x=new XMLHttpRequest();x.open('HEAD',url+'?'+Date.now(),true);x.onreadystatechange=()=>{if(x.readyState===4)r(x.status===200)};x.onerror=()=>r(false);x.send()})}
+
+async function enumerateFiles(base){
+  const f=[];
+  for(let i=1;i<=30;i++){
+    let ok=false;
+    for(const e of ALL_EXTS){
+      const u=base+'/lesson'+i+'.'+e;
+      if(IMG_EXTS.includes(e)){if(await imgExists(u)){f.push('lesson'+i+'.'+e);ok=true;break}}
+      else{if(await fileExists(u)){f.push('lesson'+i+'.'+e);ok=true;break}}
+    }
+    if(!ok)break;
+  }
+  return f;
+}
+
+async function getLessonFiles(lv,cat,les){
+  const idx=getIndexFiles(lv,cat,les);
+  return (idx&&idx.length)?idx:await enumerateFiles(lessonPath(lv,cat,les));
+}
+
+function clsFile(n){const e=n.split('.').pop().toLowerCase();if(IMG_EXTS.includes(e))return'img';if(VID_EXTS.includes(e))return'vid';if(e==='pdf')return'pdf';return'other'}
+
+function fileTypeLabel(t){return t==='img'?'صورة':t==='vid'?'فيديو':t==='pdf'?'PDF':''}
+
+// ── Render ──
+function render(){
+  tabsEl.innerHTML=DATA.map(t=>'<li><button class="'+(t.id===activeTab?'active':'')+'" data-tab="'+t.id+'">'+t.abbr+'<span class="count">'+t.lessons.length+'</span></button></li>').join('');
+  const cat=DATA.find(t=>t.id===activeTab);if(!cat)return;
+  contentEl.innerHTML='<div class="tab-panel active"><div class="tab-title">'+cat.title+'<span class="tab-badge">'+cat.lessons.length+' دروس</span></div>'+
+    cat.lessons.map(l=>'<div class="lesson-card" data-cat="'+cat.id+'" data-lesson="'+l.id+'">'+
+      '<div class="info"><div class="lesson-title">'+l.title+'</div>'+(l.desc?'<div class="lesson-desc">'+l.desc+'</div>':'')+'</div>'+
+      '<span class="badge checking" id="badge-'+cat.id+'-'+l.id+'">...</span></div>').join('')+'</div>';
+  cat.lessons.forEach(l=>checkLesson(cat.id,l.id));
+}
+
+async function checkLesson(catId,lesId){
+  const files=await getLessonFiles(currentLevel,catId,lesId);
+  const badge=$('badge-'+catId+'-'+lesId);if(!badge)return;
+  const imgs=files.filter(f=>clsFile(f)==='img').length;
+  const vids=files.filter(f=>clsFile(f)==='vid').length;
+  const pdfs=files.filter(f=>clsFile(f)==='pdf').length;
+  if(!files.length){badge.className='badge empty';badge.textContent='فارغ';return}
+  badge.className='badge loaded';
+  const parts=[];
+  if(imgs)parts.push(imgs+' صورة');
+  if(vids)parts.push(vids+' فيديو');
+  if(pdfs)parts.push(pdfs+' PDF');
+  badge.textContent=parts.join(' | ')+' ('+files.length+')';
+}
+
+// ── Lightbox ──
+function openLightbox(items,idx){
+  lbItems=items;lbCurrent=idx;
+  $('lbImg').src=items[idx];
+  $('lbCounter').textContent=(idx+1)+' من '+items.length;
+  $('lbPrev').style.display=items.length>1?'':'none';
+  $('lbNext').style.display=items.length>1?'':'none';
+  $('lightbox').classList.add('open');
+}
+$('lbClose').onclick=()=>$('lightbox').classList.remove('open');
+$('lightbox').onclick=e=>{if(e.target===$('lightbox'))$('lightbox').classList.remove('open')};
+$('lbPrev').onclick=()=>{lbCurrent=(lbCurrent-1+lbItems.length)%lbItems.length;$('lbImg').src=lbItems[lbCurrent];$('lbCounter').textContent=(lbCurrent+1)+' من '+lbItems.length};
+$('lbNext').onclick=()=>{lbCurrent=(lbCurrent+1)%lbItems.length;$('lbImg').src=lbItems[lbCurrent];$('lbCounter').textContent=(lbCurrent+1)+' من '+lbItems.length};
+document.addEventListener('keydown',e=>{
+  if(!($('lightbox').classList.contains('open')))return;
+  if(e.key==='Escape')$('lightbox').classList.remove('open');
+  if(e.key==='ArrowLeft')$('lbNext').click();
+  if(e.key==='ArrowRight')$('lbPrev').click();
+});
+
+// ── Inline Preview (inside modal) ──
+function showPreview(type,url,fname,imgIdx=null){
+  const back=$('modalBack');back.classList.add('show');
+  let html='';
+  if(type==='img'){
+    html='<div class="preview-container"><div class="preview-name">'+fname+'</div><img src="'+url+'" alt="'+fname+'" loading="lazy"><div class="preview-actions"><a class="dl-btn" href="'+url+'" download>تحميل</a></div></div>';
+  }else if(type==='vid'){
+    html='<div class="preview-container"><div class="preview-name">'+fname+'</div><video src="'+url+'" controls autoplay playsinline></video><div class="preview-actions"><a class="dl-btn" href="'+url+'" download>تحميل</a></div></div>';
+  }else if(type==='pdf'){
+    html='<div class="preview-container"><div class="preview-name">'+fname+'</div><iframe class="pdf-embed" src="'+url+'"></iframe><div class="preview-actions"><a class="dl-btn" href="'+url+'" download>تحميل</a></div></div>';
+  }
+  modalBody.innerHTML=html;
+}
+
+function showListView(){
+  const back=$('modalBack');back.classList.remove('show');
+  if(!listState)return;
+  const {catId,lessonId,files,base,imgFiles} = listState;
+  const imgs=files.filter(f=>clsFile(f)==='img').length;
+  const vids=files.filter(f=>clsFile(f)==='vid').length;
+  const pdfs=files.filter(f=>clsFile(f)==='pdf').length;
+
+  let summary='<div class="file-summary">';
+  if(imgs)summary+='<span class="sum-item"><span class="sum-dot img"></span>'+imgs+' صورة</span>';
+  if(vids)summary+='<span class="sum-item"><span class="sum-dot vid"></span>'+vids+' فيديو</span>';
+  if(pdfs)summary+='<span class="sum-item"><span class="sum-dot pdf"></span>'+pdfs+' PDF</span>';
+  summary+='<span class="sum-item" style="background:transparent;border-color:transparent;color:#999">'+files.length+' ملف</span>';
+  summary+='</div>';
+
+  let list='';
+  let ci=0;
+  files.forEach(f=>{
+    const t=clsFile(f);const url=base+'/'+f;const label=fileTypeLabel(t);const typeClass=t;
+    let preview='';
+    if(t==='img'){
+      const ci2=ci++;
+      preview='<img src="'+url+'" alt="" loading="lazy" onclick="showPreview(\'img\',\''+url+'\',\''+f+'\')">';
+    }else if(t==='vid'){
+      preview='<div class="vid-overlay"><div class="play-tri"></div></div>';
+    }else if(t==='pdf'){
+      preview='<div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></div>';
+    }
+    let viewBtn='';
+    if(t==='img'){
+      viewBtn='<button class="view-btn" onclick="showPreview(\'img\',\''+url+'\',\''+f+'\')">فتح</button>';
+    }
+    else if(t==='vid'){viewBtn='<button class="view-btn vid" onclick="showPreview(\'vid\',\''+url+'\',\''+f+'\')">مشاهدة</button>';}
+    else if(t==='pdf'){viewBtn='<button class="view-btn pdf-v" onclick="showPreview(\'pdf\',\''+url+'\',\''+f+'\')">فتح</button>';}
+    list+='<div class="file-item">'+
+      '<div class="file-preview">'+preview+'</div>'+
+      '<div class="file-info"><div class="file-name">'+f+'</div><div class="file-meta"><span class="file-type-badge '+typeClass+'">'+label+'</span></div></div>'+
+      '<div class="file-actions">'+viewBtn+'<a class="dl-btn" href="'+url+'" download>تحميل</a></div>'+
+    '</div>';
+  });
+  
+  const raw = contentIndex?.students?.[currentLevel]?.[catId]?.[lessonId] || '';
+  const students = raw ? raw.split('\n').filter(s=>s.trim()) : [];
+  let studentsHtml='<div class="students-section"><div class="students-title">الطلاب الذين أنجزوا الدرس';
+  if(students.length)studentsHtml+=' <span class="count-badge">'+students.length+'</span>';
+  studentsHtml+='</div>';
+  if(students.length){
+    studentsHtml+='<div class="students-tags">'+students.map(s=>'<span class="stag">'+s.trim()+'</span>').join('')+'</div>';
+  }else{
+    studentsHtml+='<div class="students-empty">لم يسجل أي طالب بعد</div>';
+  }
+  studentsHtml+='</div>';
+
+  modalBody.innerHTML=summary+list+studentsHtml;
+}
+
+async function openLesson(catId,lessonId){
+  const cat=DATA.find(t=>t.id===catId);
+  const lesson=cat?.lessons.find(l=>l.id===lessonId);
+  if(!lesson)return;
+  const levelName=levelSelect.options[levelSelect.selectedIndex].text;
+  modalTitle.textContent=cat.title+' - '+lesson.title;
+  modalMeta.textContent=levelName;
+  $('modalBack').classList.remove('show');
+
+  const files=await getLessonFiles(currentLevel,catId,lessonId);
+  const students = contentIndex?.students?.[currentLevel]?.[catId]?.[lessonId] || [];
+
+  if(!files.length && !students.length){
+    modalBody.innerHTML='<div class="modal-empty"><span class="empty-icon">-</span>    - سيضيفه المطورون قريبًا<br> - لا يوجد محتوى بعد لهذا الدرس</div>';
+    modal.classList.add('open');
+    return;
+  }
+
+  const base=lessonPath(currentLevel,catId,lessonId);
+  const allFiles=files;
+  listState={catId,lessonId,files:allFiles,base};
+  showListView();
+  modal.classList.add('open');
+}
+
+levelSelect.addEventListener('change',()=>{currentLevel=levelSelect.value;render()});
+tabsEl.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;activeTab=b.dataset.tab;document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
+contentEl.addEventListener('click',e=>{const c=e.target.closest('.lesson-card');if(c)openLesson(c.dataset.cat,c.dataset.lesson)});
+modalClose.addEventListener('click',()=>{modal.classList.remove('open')});
+modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')});
+modalBack.addEventListener('click',showListView);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))modal.classList.remove('open')});
+
+async function init(){
+  if(!contentIndex)await loadIndexFallback();
+  render();
+}
+init();
+</script>
+</body>
+</html>
