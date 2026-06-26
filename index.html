@@ -10,9 +10,19 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f4f1e8;
 .container{max-width:1100px;margin:auto;padding:0 20px}
 
 /* Header */
-header{background:linear-gradient(160deg,#1a6b3c,#0d4a26);color:#fff;text-align:center;padding:32px 20px 20px}
-header h1{font-size:1.6rem;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,.15)}
-header p{font-size:.85rem;opacity:.75;letter-spacing:.3px}
+header{background:linear-gradient(160deg,#1a6b3c,#0d4a26);color:#fff;padding:0}
+.header-inner{position:relative;padding:28px 20px 18px;max-width:1100px;margin:auto;text-align:center}
+.header-logo{position:absolute;top:50%;transform:translateY(-50%)}
+.header-logo.left{right:20px}
+.header-logo.right{left:20px}
+.header-logo img{height:60px;width:auto}
+.header-logo.apee img{transform:scale(1.3)}
+.header-logo.apee{display:block}
+@media(max-width:768px){.header-logo.apee{display:none}}
+.header-text{text-align:center}
+header h1{font-size:1.5rem;margin-bottom:2px;text-shadow:0 2px 4px rgba(0,0,0,.15)}
+header .sub{font-size:.82rem;opacity:.75;letter-spacing:.3px}
+header .teacher{display:inline-block;margin-top:6px;font-size:.8rem;color:#c9a84c;background:rgba(0,0,0,.15);padding:3px 16px;border-radius:20px;font-weight:500;letter-spacing:.3px}
 
 /* Level bar */
 .level-bar{background:#0d4a26;padding:10px 20px;display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.06)}
@@ -143,9 +153,18 @@ header p{font-size:.85rem;opacity:.75;letter-spacing:.3px}
 .lightbox-nav.next{right:14px}
 .lightbox-counter{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.4);font-size:.78rem;z-index:3001;letter-spacing:.5px}
 
-footer{text-align:center;padding:20px;color:#999;font-size:.78rem;border-top:1px solid #e0dccf;margin-top:30px}
+footer{background:#fff;padding:24px 20px;font-size:.78rem;border-top:1px solid #e0dccf;margin-top:30px;color:#888}
+footer .footer-inner{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+footer .footer-inner .cr{font-weight:500}
+footer .footer-inner .dev{color:#aaa}
+footer .footer-inner .dev strong{color:#1a6b3c}
 
 @media(max-width:768px){
+  .header-inner{padding:20px 16px 14px}
+  .header-logo{position:static;transform:none}
+  .header-logo.right{margin-bottom:6px}
+  .header-logo img{height:50px}
+  .header-logo.apee{display:none}
   header h1{font-size:1.15rem}
   .tabs li button{padding:7px 10px;font-size:.73rem}
   .tab-title{font-size:1rem}
@@ -166,9 +185,14 @@ footer{text-align:center;padding:20px;color:#999;font-size:.78rem;border-top:1px
 <body>
 
 <header>
-  <div class="container">
-    <h1>دروس التربية الإسلامية</h1>
-    <p>أولى باك - ثانوية التميز بالرباط</p>
+  <div class="header-inner">
+    <div class="header-logo apee right"><img src="static/apee.png" alt="APEE"></div>
+    <div class="header-logo left"><img src="static/lydex-logo.png" alt="Lydex"></div>
+    <div class="header-text">
+      <h1>دروس التربية الإسلامية</h1>
+      <div class="sub">أولى باك - ثانوية التميز بالرباط</div>
+      <div class="teacher">تحت إشراف الأستاذ: عطية الحرشاوي</div>
+    </div>
   </div>
   <div class="level-bar">
     <label>المستوى الدراسي:</label>
@@ -190,11 +214,11 @@ footer{text-align:center;padding:20px;color:#999;font-size:.78rem;border-top:1px
 </div>
 
 <div class="content-wrap" id="content"></div>
-<style>
-  .fs-18 {font-size: 18px;}
-</style>
 <footer>
-  <div class="container fs-18">دروس التربية الإسلامية &copy; 2026 | تطوير: Ahmed BOURAMDANE</div>
+  <div class="footer-inner">
+    <span class="cr">دروس التربية الإسلامية &copy; 2026</span>
+    <span class="dev">تطوير: <strong>Ahmed BOURAMDANE</strong></span>
+  </div>
 </footer>
 
 <!-- Lesson Modal -->
@@ -424,7 +448,7 @@ function showListView(){
   if(students.length){
     studentsHtml+='<div class="students-tags">'+students.map(s=>'<span class="stag">'+s.trim()+'</span>').join('')+'</div>';
   }else{
-    studentsHtml+='<div class="students-empty">لم يسجل أي طالب بعد</div>';
+    studentsHtml+='<div class="students-empty">لم يسجل أي طالب بعد'+(files.length?' - ربما لم يتم تحديد اسم الطالب بدقة':'')+'</div>';
   }
   studentsHtml+='</div>';
 
